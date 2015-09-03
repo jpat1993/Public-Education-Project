@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Final Project</title>
+
+  <link rel="stylesheet" href="jquery-ui-1.11.4/jquery-ui-1.11.4/jquery-ui.css">
+  <link href="css/bootstrap.min.css" type="text/css" rel="stylesheet" media="screen">
+  <link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Tangerine">
+
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap-theme.min.css">
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js"></script>
+
+</head>
+
+<style>
+@font-face {
+font-family: Audimat;
+src: url("AUdimat-Regular.otf") format("opentype");
+}
+
+
+svg {
+  font: 14px sans-serif;
+}
+
+
+
+.background path {
+  fill: none;
+  stroke: #ddd;
+  shape-rendering: crispEdges;
+}
+
+.foreground path {
+  fill: none;
+  stroke: #1FDA9A;
+}
+
+.brush .extent {
+  fill-opacity: .3;
+  stroke: #fff;
+  shape-rendering: crispEdges;
+}
+
+.axis line,
+.axis path {
+  fill: none;
+  stroke: #3F2860;
+  shape-rendering: crispEdges;
+}
+
+/*styling for legend buttons within each tab*/
+.myLegend{
+    padding: 2px;
+    margin: 2px;
+    cursor: pointer;
+    color: black;
+    font-size: 12px;
+    background:transparent;
+}
+.selected {
+    color: blue;
+    background: white;
+
+}
+
+
+.axis text {
+  text-shadow: 0 1px 0 #fff, 1px 0 0 #fff, 0 -1px 0 #fff, -1px 0 0 #fff;
+  cursor: move;
+}
+
+
+.d3-tip {
+  line-height: 4;
+  font-weight: bold;
+  padding: 14px;
+  background: rgba(0, 0, 0, 0.8);
+  color: #fff;
+  border-radius: 4px;
+}
+
+/* Creates a small triangle extender for the tooltip */
+.d3-tip:after {
+  box-sizing: border-box;
+  display: inline;
+  font-size: 12px;
+  width: 100%;
+  line-height: 1;
+  color: rgba(0, 0, 0, 0.8);
+  content: "\25BC";
+  position: absolute;
+  text-align: center;
+}
+
+/* Style northward tooltips differently */
+.d3-tip.n:after {
+  margin: -1px 0 0 0;
+  top: 100%;
+  left: 0;
+}
+
+h1{
+  text-align:center;
+   color: #000088;
+  font-size: 12px;
+  padding:0;
+}
+
+h3 {
+  text-align: center;
+  color: #000088;
+  font-size: 3em;
+  padding-top: 10px;
+
+}
+
+body{
+  margin-left:10%;
+}
+
+/*styling for the legend on the left*/
+#legend{
+
+    margin-top: 30px;
+    /*width: auto;*/
+
+    height:310px;
+}
+#legend ul{
+  background-color:#F8F8F8;
+
+}
+#legend ul li{
+  width: 55px;
+  font-size: 8px;
+}
+
+/*styling for parallel coordinates*/
+#pchart {
+ background-color: #F8F8F8;
+ margin-top: 30px;
+ /*width: 800px;*/
+
+}
+
+/*styling for bar charts*/
+#chart1 {
+  height: 200px;
+  /*width:auto;*/
+}
+#chart2 {
+
+
+  height: 200px;
+  /*width: auto;*/
+}
+
+p {
+  font-size: 9px;
+}
+
+
+button{
+  width:130px;
+  height:30px;
+  background-color: white;
+}
+
+</style>
+
+<!--All custom written code using Bootstrap framework; formatting the layout/structure of all components on the page-->
+<div class="container">
+  <!--header-->
+<div class="row">
+      <div class="span12"><h3> Public Education </h3>
+      <h1>Based on data from the <a href= "http://nces.ed.gov/surveys/els2002/" >NCES ELS:2002 Education Longitudinal Study</a></h1>
+      </div>
+</div>
+<div class="row">
+    <!--legend to the left with a tabbed-layout using Bootstrap-->
+      <div class="span4" id="legend">
+	  <ul class="nav nav-tabs">
+            <li class="active"><a data-toggle ="tab" href="#1">School Resources</a></li>
+            <li><a data-toggle ="tab" href="#5">Parents Highest Education</a></li>
+            <li><a data-toggle ="tab" href="#2">Parent Involvement</a></li>
+            <li><a data-toggle ="tab" href="#3">Hours Worked</a></li>
+            <li><a data-toggle ="tab" href="#4">Extracurricular Involvement</a></li>
+            
+          </ul>
+        <div class="tab-content">
+          <div id="1" class="tab-pane fade in active">
+              <h1>School Resources</h3>
+              <p>A composite measure of the sum of the affirmative answers to questions about availability of resources such as classroom computers, media centers, school library, etc. at the student's school</p>
+              <p>-------------------------</p>
+              <p>Bar graph view: </p>
+              <p>1: School resource score 0-4 </p>
+              <p>2: School resource score 4-8 </p>
+              <p>3: School resource score 8-12 </p>
+              <p>4: School resource score 12+ </p>
+              <button class="myLegend selected" data-series="series-1">Positive Outcome </button>
+              <button class="myLegend selected" data-series="series-2">Negative Outcome </button>
+             
+          </div>
+          <div id="5" class="tab-pane fade">
+              <h1>Parents Highest Education</h3>
+              <p>Parent's highest level of education. The lowest value 0 represents that neither parent has completed HS.  The highest value, 8, indicates that at least one parent has a Ph.D or other professional degree</p>
+              <p>-------------------------</p>
+              <p>Bar graph view</p>
+              <p>1: HS Diploma or lower</p>
+              <p>2: Attended and/or graduated from 2-year school</p>
+              <p>3: Attended and/or graduated from 4-year school</p>
+              <p>4: Master's, PhD or other advanced degree</p>
+              <button class="myLegend selected" data-series="series-9">Positive Outcome </button>
+              <button class="myLegend selected" data-series="series-10">Negative Outcome </button>
+          </div>
+          <div id="2" class="tab-pane fade">
+              <h1>Parent Involvement</h3>
+              <p>A composite measure of the parent's involvement in the child's educational experience.Consists of a sum of the affirmative responses to questions related to the paren'ts involvement through parent-teacher orgs, checking homework, restricting free time, etc.</p>
+              <p>-------------------------</p>
+              <p>Bar graph view: </p>
+              <p>Ranges 1-4 indicate lower-higher levels of parent involvement</p>
+              <button class="myLegend selected" data-series="series-3">Positive Outcome </button>
+              <button class="myLegend selected" data-series="series-4">Negative Outcome </button>
+          </div>
+          <div id="3" class="tab-pane fade">
+              <h1>Hours worked</h3>
+              <p>A measure of the # of hours the student worked per week in high school, on average</p>
+              <p>-------------------------</p>
+              <p>Bar graph view:</p>
+              <p>1: 0-10 hours</p>
+              <p>2: 10-20 hours</p>
+              <p>3: 20-30 hours</p>
+              <p>4: 30-40 hours</p>
+              <button class="myLegend selected" data-series="series-5">Positive Outcome </button>
+              <button class="myLegend selected" data-series="series-6">Negative Outcome </button>
+          </div>
+          <div id="4" class="tab-pane fade">
+              <h1>Extracurricular Involvement</h3>
+              <p>A measure of the # of hours the student spent involved in extracurricular activities per week, on average</p>
+              <p>-------------------------</p>
+              <p>Bar graph view:</p>
+              <p>1: 0-5 hours</p>
+              <p>2: 5-10 hours</p>
+              <p>3: 10-15 hours</p>
+              <p>4: 15-20 hours</p>
+              <button class="myLegend selected" data-series="series-7">Positive Outcome </button>
+              <button class="myLegend selected" data-series="series-8">Negative Outcome </button>
+          </div>
+          
+        </div>
+      </div>
+  <!--Parallel coordinates chart-->
+    <div class="span8" id ="pchart"></div>
+</div>
+<div class="row">
+    <!--bar charts-->
+      <div class="span6" id="chart1"></div>
+      <div class="span6" id="chart2"></div>
+</div>
+
+</div>
+
+<body>
+
+  <script src="jquery-ui-1.11.4/jquery-ui-1.11.4/external/jquery/jquery.js"></script>
+  <script src="jquery-ui-1.11.4/jquery-ui-1.11.4/jquery-ui.js"></script>
+
+  <script src="js/bootstrap.min.js"></script>
+  <script src="http://code.highcharts.com/highcharts.js"></script>
+  <script src="http://code.highcharts.com/modules/exporting.js"></script>
+  <script src="http://code.highcharts.com/highcharts-3d.js"></script>
+  <script src="http://d3js.org/d3.v3.min.js"></script>
+
+
+
+
+  <script>
+//Parallel Coordinates- imported and modified using d3.js
+var margin = {top:30, right: 20, bottom: 30, left: 20},
+    width = 650 - margin.left - margin.right,
+    height = 300 - margin.top - margin.bottom;
+
+var x = d3.scale.ordinal().rangePoints([0, width], 1),
+    y = {},
+    dragging = {};
+
+var line = d3.svg.line(),
+    axis = d3.svg.axis().orient("left"),
+    background,
+    foreground;
+
+var svg = d3.select("#pchart").append("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+  .append("g")
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+var xAxis = d3.svg.axis()
+  .scale(x)
+  .orient("bottom");
+
+var yAxis = d3.svg.axis()
+    .scale(y)
+    .orient("left")
+    .tickFormat(d3.format(".2s"));
+
+
+var parsed_data;
+var yr;
+
+
+//Loading PC data from file
+function render() {
+  d3.csv("source.csv", function(error, parallel) {
+    parallel = parallel.filter(function(d) {
+      if(d.School_Resources >=0 && d.Parent_Involvement >= 0 && d.Hours_Worked >= 0 &&
+         d.Extracurricular >= 0 && d.Parent_Education >= 0 && d.Sex >= 0) {
+          return true;
+      } else {
+        return false;
+      }
+    })
+  // Extract the list of dimensions and create a scale for each.
+  x.domain(dimensions = d3.keys(parallel[0]).filter(function(d) {
+    return (y[d] = d3.scale.linear()
+        .domain(d3.extent(parallel, function(p) { return +p[d]; }))
+        .range([height, 0]));
+  }));
+
+  // Add grey background lines for context.
+  background = svg.append("g")
+      .attr("class", "background")
+    .selectAll("path")
+      .data(parallel)
+    .enter().append("path")
+      .attr("d", path);
+
+  // Add blue foreground lines for focus.
+  foreground = svg.append("g")
+      .attr("class", "foreground")
+    .selectAll("path")
+      .data(parallel)
+    .enter().append("path")
+      .attr("d", path);
+
+  // Add a group element for each dimension.
+  var g = svg.selectAll(".dimension")
+      .data(dimensions)
+    .enter().append("g")
+      .attr("class", "dimension")
+      .attr("transform", function(d) { return "translate(" + x(d) + ")"; })
+      .call(d3.behavior.drag()
+        .origin(function(d) { return {x: x(d)}; })
+        .on("dragstart", function(d) {
+          dragging[d] = x(d);
+          background.attr("visibility", "hidden");
+        })
+        .on("drag", function(d) {
+          dragging[d] = Math.min(width, Math.max(0, d3.event.x));
+          foreground.attr("d", path);
+          dimensions.sort(function(a, b) { return position(a) - position(b); });
+          x.domain(dimensions);
+          g.attr("transform", function(d) { return "translate(" + position(d) + ")"; })
+        })
+        .on("dragend", function(d) {
+          delete dragging[d];
+          transition(d3.select(this)).attr("transform", "translate(" + x(d) + ")");
+          transition(foreground).attr("d", path);
+          background
+              .attr("d", path)
+            .transition()
+              .delay(500)
+              .duration(0)
+              .attr("visibility", null);
+        })
+
+        );
+
+  // Add an axis and title.
+  g.append("g")
+      .attr("class", "axis")
+      .each(function(d) { d3.select(this).call(axis.scale(y[d])); })
+    .append("text")
+      .style("text-anchor", "middle")
+      .attr("y", -9)
+      .attr("font-size", 10)
+      .text(function(d) { return d; });
+
+  // Add and store a brush for each axis.
+  g.append("g")
+      .attr("class", "brush")
+      .each(function(d) {
+        d3.select(this).call(y[d].brush = d3.svg.brush().y(y[d]).on("brushstart", brushstart).on("brush", brush));
+      })
+    .selectAll("rect")
+      .attr("x", -8)
+      .attr("width", 16);
+});
+
+}
+
+
+
+function position(d) {
+  var v = dragging[d];
+  return v == null ? x(d) : v;
+}
+
+function transition(g) {
+  return g.transition().duration(500);
+}
+
+// Returns the path for a given data point.
+function path(d) {
+  return line(dimensions.map(function(p) { return [position(p), y[p](d[p])]; }));
+}
+
+function brushstart() {
+  d3.event.sourceEvent.stopPropagation();
+}
+
+// Handles a brush event, toggling the display of foreground lines.
+function brush() {
+  var actives = dimensions.filter(function(p) { return !y[p].brush.empty(); }),
+      extents = actives.map(function(p) { return y[p].brush.extent(); });
+  foreground.style("display", function(d) {
+    return actives.every(function(p, i) {
+      return extents[i][0] <= d[p] && d[p] <= extents[i][1];
+    }) ? null : "none";
+  });
+}
+
+render();
+
+
+//Bar charts: Imported and mostly modified code
+
+$(function () {
+    $('#chart1').highcharts({
+        chart: {
+            type: 'bar',
+
+        },
+        title: {
+            text: 'Outcome - Employment'
+        },
+        xAxis: {
+            categories: ['1', '2', '3', '4'],
+            title: {
+                text: 'level (1-4)'
+            }
+        },
+        yAxis: {
+            min: 0,
+            title: {
+                text: '# of Students',
+                align: 'high'
+            },
+            labels: {
+                overflow: 'justify'
+            }
+        },
+        tooltip: {
+
+        },
+        plotOptions: {
+            bar: {
+                dataLabels: {
+                    enabled: false
+                }
+            }
+        },
+        legend: {
+            enabled: false,
+            layout: 'horizontal',
+            align: 'right',
+            verticalAlign: 'top',
+            x: -40,
+            y: 50,
+            floating: true,
+            borderWidth: 1,
+            backgroundColor: ((Highcharts.theme && Highcharts.theme.legendBackgroundColor) || '#FFFFFF'),
+            shadow: true
+        },
+        //The series data is hard-coded, however it was generated in excel using our data set
+        series: [{
+          id: 'series-1',
+            name: 'School Resources vs. Employed',
+            data: [71,25, 16, 2],
+            visible: false
+        }, {
+          id: 'series-2',
+            name: 'School Resources vs. Not Employed',
+            data: [65,17, 9, 1],
+            visible: false
+        }, {
+          id: 'series-3',
+            name: 'Parent Involvement vs Employed',
+            data: [1,7,59,24],
+            visible: false
+
+        }, {
+          id: 'series-4',
+            name: 'Parent Involvement vs. Not Employed',
+            data: [4,3,64,15],
+            visible: false
+        }, {
+          id: 'series-5',
+            name: 'Employed during School vs. Employed',
+            data: [39,24,7,8],
+            visible: false
+        }, {
+          id: 'series-6',
+            name: 'Employed during School vs. Not Employed',
+            data: [24,18,15,10],
+            visible: false
+        }, {
+          id: 'series-7',
+            name: 'Extracurricular Involvement vs. Employed',
+            data: [90,43,23,10],
+            visible: false
+        }, {
+          id: 'series-8',
+            name: 'Extracurricular Involvement vs. Not Employed',
+            data: [114,15,14,3],
+            visible: false
+        }, {
+          id: 'series-9',
+            name: 'Parent Highest Education vs. Employed',
+            data: [42,24,67,34],
+            visible: false
+        }, {
+          id: 'series-10',
+            name: 'Parent Highest Education vs. Not Employed',
+            data: [35,35,39,40],
+            visible: false
+        },
+
+
+
+        ]
+
+    });
+	 var chart = $('#chart1').highcharts();
+
+    $('.myLegend').click(function() {
+        var series = chart.get($(this).attr('data-series'));
+        if (series.visible) {
+            series.hide();
+            $(this).removeClass('selected');
+        } else {
+            series.show();
+            $(this).addClass('selected');
+        }
+    });
+
+});
+
+
+
+$(function () {
+    $('#chart2').highcharts({
+        chart: {
+            type: 'bar'
+        },
+        title: {
+            text: 'Outcome- HS Completion'
+        },
+        xAxis: {
+            categories: ['1', '2', '3', '4'],
+            title: {
+                text: 'level (1-4)'
+            }
+        },
+        yAxis: {
+            min: 0,
+            title: {
+                text: '# of Students',
+                align: 'high'
+            },
+            labels: {
+                overflow: 'justify'
+            }
+        },
+        tooltip: {
+
+        },
+        plotOptions: {
+            bar: {
+                dataLabels: {
+                    enabled: false
+                }
+            }
+        },
+        legend: {
+            enabled: false,
+            layout: 'horizontal',
+            align: 'right',
+            verticalAlign: 'top',
+            x: -40,
+            y: 50,
+            floating: true,
+            borderWidth: 1,
+            backgroundColor: ((Highcharts.theme && Highcharts.theme.legendBackgroundColor) || '#FFFFFF'),
+            shadow: true
+        },
+        //series data is hard-coded, however we generated the values in excel using our dataset
+        series: [{
+          id: 'series-1',
+            name: 'School Resources vs. Completed HS',
+            data: [250, 86, 45, 13],
+            visible: false
+        }, {id: 'series-3',
+            name: 'Parent Involvement vs. Completed HS',
+            data: [10,26, 230, 60],
+            visible: false
+        }, {
+          id: 'series-5',
+            name: 'Employment During School vs. Completed HS',
+            data: [110, 76, 47, 36],
+            visible: false
+        }, {
+          id: 'series-7',
+            name: 'Extracurricular Involvement vs. Completed HS',
+            data: [429, 90, 54, 23],
+            visible: false
+        }, {
+          id: 'series-9',
+            name: 'Parents Highest Edu. Level vs. Completed HS',
+            data: [161, 114, 196, 130],
+            visible: false
+        },
+
+        ]
+
+    });
+	 var chart = $('#chart2').highcharts();
+
+    $('.myLegend').click(function() {
+        var series = chart.get($(this).attr('data-series'));
+        if (series.visible) {
+            series.hide();
+            $(this).removeClass('selected');
+        } else {
+            series.show();
+            $(this).addClass('selected');
+        }
+    });
+
+});
+</script>
+
+</script>
+</body>
+</html>
